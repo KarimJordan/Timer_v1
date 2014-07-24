@@ -11,7 +11,10 @@ LiquidCrystal lcd (12, 11, 5, 4, 3, 2);
 String content;
 int charac = 0;
 
-int led = 8;
+const int led = 8;
+const int button = 9;
+int buttonState = 0;
+
 
 //received message
 int firstPosition;
@@ -41,6 +44,7 @@ void setup()
 	//timer = outputMin * 60 * 1000;
 	lastMillisReading = millis();
         pinMode(led, OUTPUT);
+        pinMode(button, INPUT);
         Serial.begin(19200);
         initSMS();
 }
@@ -53,10 +57,27 @@ void initSMS()
   delay(200);
 }
 
+void sendSMS(String message)
+{
+  Serial.print("AT+CMGF=1\r");
+  delay(200);
+  Serial.println("AT+CMGS=\"09172796397\"");
+  delay(100);
+  Serial.println(message);
+  delay(100);
+  Serial.println((char)26);
+  delay(100);
+  Serial.println();
+  delay(100);
+  Serial.println("SMS sent!");
+}
+
 void loop()
 {
 	unsigned long deltaMillis = 0;
 	unsigned long thisMillis = millis();
+        
+        buttonState = digitalRead(button);
 
           if(Serial.available() > 0) {
             char received = Serial.read();
@@ -107,7 +128,6 @@ void loop()
         {
           delay(100);
           digitalWrite(led, LOW);
-          deviceState = "OFF";
           timer = 0;
           seconds = 0;
           minutes = 0;
@@ -123,6 +143,12 @@ void loop()
         if(timer > 0)
 	{
           timer -= deltaMillis;
+          
+          //insert PIR Read Here Code to be updated be tomorrow kapag may load na
+          if(buttonState == LOW)
+          {
+          sendSMS("Movement Detected");
+          }
                 //Serial.println(timer/1000);
                 //lcd.setCursor(0,1);
                 //lcd.print(timer/1000);
