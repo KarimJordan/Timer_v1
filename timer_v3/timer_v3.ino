@@ -99,14 +99,19 @@ void loop()
         seconds = timer/1000;
         minutes = seconds/60;
         
-        Serial.println(iMinutes);
-        Serial.println(timer);
-        Serial.println(seconds);
-        Serial.println(minutes);
-        
         if(deviceState == "ON")
         {
+          delay(100);
           digitalWrite(led, HIGH);
+        }else if(deviceState == "OFF")
+        {
+          delay(100);
+          digitalWrite(led, LOW);
+          deviceState = "OFF";
+          timer = 0;
+          seconds = 0;
+          minutes = 0;
+          thisMillis = 0;
         }
           
         if(thisMillis != lastMillisReading)
